@@ -1,0 +1,163 @@
+/* ============================================================
+   HOJIKENT OROMGOHI — Global Styles
+   Stack: Vue 3 + Vite | Fonts: Google Fonts
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Nunito:wght@300;400;500;600;700&display=swap');
+
+/* ── CSS Custom Properties ── */
+:root {
+  --clr-primary:   #2d6a4f;   /* deep forest green */
+  --clr-primary-light: #52b788;
+  --clr-primary-dark:  #1b4332;
+  --clr-accent:    #d4a017;   /* warm gold */
+  --clr-accent-light: #f0c040;
+  --clr-bg:        #f8f5f0;   /* warm off-white */
+  --clr-bg-alt:    #efefea;
+  --clr-surface:   #ffffff;
+  --clr-text:      #1a1a1a;
+  --clr-text-muted: #6b7280;
+  --clr-border:    #e0dbd2;
+  --clr-overlay:   rgba(27, 67, 50, 0.55);
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'Nunito', sans-serif;
+
+  --radius-sm:  6px;
+  --radius-md:  12px;
+  --radius-lg:  20px;
+  --radius-xl:  32px;
+
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 24px rgba(0,0,0,0.12);
+  --shadow-lg: 0 12px 48px rgba(0,0,0,0.18);
+
+  --transition: 0.3s ease;
+  --section-pad: 80px 0;
+}
+
+/* ── Reset & Base ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: var(--font-body);
+  background: var(--clr-bg);
+  color: var(--clr-text);
+  line-height: 1.6;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+}
+img { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; }
+ul, ol { list-style: none; }
+
+/* ── Utility Classes ── */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section {
+  padding: var(--section-pad);
+}
+
+.section-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--clr-primary);
+  margin-bottom: 16px;
+}
+.section-label::before {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 2px;
+  background: var(--clr-primary);
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(28px, 4vw, 42px);
+  font-weight: 700;
+  color: var(--clr-text);
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  transition: var(--transition);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: var(--clr-primary);
+  color: #fff;
+  border: 2px solid var(--clr-primary);
+}
+.btn-primary:hover {
+  background: var(--clr-primary-dark);
+  border-color: var(--clr-primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(45, 106, 79, 0.35);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--clr-primary);
+  border: 2px solid var(--clr-primary);
+}
+.btn-outline:hover {
+  background: var(--clr-primary);
+  color: #fff;
+  transform: translateY(-1px);
+}
+
+.btn-accent {
+  background: var(--clr-accent);
+  color: #fff;
+  border: 2px solid var(--clr-accent);
+}
+.btn-accent:hover {
+  background: #b8860b;
+  border-color: #b8860b;
+  transform: translateY(-1px);
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: var(--clr-bg-alt); }
+::-webkit-scrollbar-thumb { background: var(--clr-primary-light); border-radius: 4px; }
+
+/* ── Fade-in animation ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-up {
+  animation: fadeUp 0.7s ease both;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  :root { --section-pad: 56px 0; }
+  .container { padding: 0 16px; }
+}
