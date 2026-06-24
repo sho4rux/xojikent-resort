@@ -161,3 +161,45 @@ ul, ol { list-style: none; }
   :root { --section-pad: 56px 0; }
   .container { padding: 0 16px; }
 }
+
+/* ── VueDatePicker theme ── */
+.dp__theme_light {
+  --dp-primary-color: #2d6a4f;
+  --dp-primary-text-color: #fff;
+  --dp-border-color: #e2e8f0;
+  --dp-border-color-hover: #2d6a4f;
+  --dp-font-family: 'Nunito', sans-serif;
+  --dp-font-size: 14px;
+  --dp-border-radius: 10px;
+}
+.dp__input {
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-family: 'Nunito', sans-serif;
+  font-size: 14px;
+  color: #1e293b;
+  background: #f8fafc;
+  padding: 12px 14px 12px 38px;
+  height: auto;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.dp__input:focus {
+  border-color: #2d6a4f;
+  box-shadow: 0 0 0 3px rgba(45,106,79,0.12);
+  outline: none;
+}
+.dp__input_wrap { width: 100%; }
+.dp__input_icon { color: #94a3b8; }
+.dp__menu {
+  border: 1.5px solid #e2e8f0;
+  border-radius: 14px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+  font-family: 'Nunito', sans-serif;
+}
+.dp__calendar_header_item,
+.dp__cell_inner { font-family: 'Nunito', sans-serif; }
+.dp__active_date { background: #2d6a4f !important; }
+.dp__today { border-color: #2d6a4f !important; }
+.dp__range_start, .dp__range_end { background: #2d6a4f !important; }
+.dp__range_between { background: rgba(45,106,79,0.1) !important; color: #2d6a4f; }
+.dp__action_button.dp__action_select { background: #2d6a4f; border-color: #2d6a4f; }

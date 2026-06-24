@@ -93,10 +93,18 @@ const defaultData = {
       { title: '3-разовое питание', desc: 'Свежие блюда каждый день включены в цену', iconKey: 'food' },
       { title: 'Активный отдых', desc: 'Бассейны, спорт, экскурсии и дискотеки', iconKey: 'activity' },
     ],
-    imageMain: { src: '/images/outdoor_5.jpg', rotation: 0 },
-    imageSecondary: { src: '/images/outdoor_6.jpg', rotation: 0 },
+    images: [
+      { src: '/images/outdoor_5.jpg', rotation: 0 },
+      { src: '/images/outdoor_6.jpg', rotation: 0 },
+    ],
     badgeNumber: '30+',
     badgeText: 'лет\nработы',
+  },
+  video: {
+    sectionLabel: 'Виртуальный тур',
+    title: 'Почувствуйте атмосферу Ходжикента',
+    subtitle: 'Посмотрите наш короткий фильм и представьте себя здесь',
+    youtubeUrl: '',
   },
   services: {
     sectionLabel: 'Наши услуги',
@@ -202,6 +210,8 @@ const defaultData = {
     labelPhone: 'Телефон',
     labelEmail: 'Email',
     labelHours: 'Режим работы',
+    telegramToken: '8963898517:AAH2WtMd0-F0aTUOcSj6vwneSSW0414zKy0',
+    telegramChatId: '-1003972871517',
   },
   footer: {
     logoMain: 'HOJIKENT',
@@ -239,6 +249,15 @@ function loadData() {
       Object.keys(base).forEach(k => {
         if (!(k in parsed)) parsed[k] = base[k]
       })
+      // Migrate about images from old imageMain/imageSecondary to images array
+      if (parsed.about && !Array.isArray(parsed.about.images)) {
+        parsed.about.images = [
+          parsed.about.imageMain ?? base.about.images[0],
+          parsed.about.imageSecondary ?? base.about.images[1],
+        ]
+        delete parsed.about.imageMain
+        delete parsed.about.imageSecondary
+      }
       return parsed
     }
   } catch {}

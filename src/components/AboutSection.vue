@@ -23,18 +23,18 @@
         <div class="about__images" ref="imgRef">
           <div class="about__img-main">
             <img
-              :src="t.about.imageMain.src"
+              :src="t.about.images[0]?.src"
               alt="Пансионат Ходжикент"
               loading="lazy"
-              :style="imgRotationStyle(t.about.imageMain.rotation)"
+              :style="imgRotationStyle(t.about.images[0]?.rotation)"
             />
           </div>
           <div class="about__img-secondary">
             <img
-              :src="t.about.imageSecondary.src"
+              :src="t.about.images[1]?.src"
               alt="Территория пансионата"
               loading="lazy"
-              :style="imgRotationStyle(t.about.imageSecondary.rotation)"
+              :style="imgRotationStyle(t.about.images[1]?.rotation)"
             />
           </div>
           <div class="about__img-badge">

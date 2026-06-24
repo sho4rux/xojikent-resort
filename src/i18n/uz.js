@@ -29,9 +29,16 @@ export default {
       { title: 'Kuniga 3 mahal ovqat', desc: 'Narxga kiritilgan yangi taomlar', iconKey: 'food' },
       { title: 'Faol dam olish', desc: 'Havzalar, sport, ekskursiyalar va disko oqshomlari', iconKey: 'activity' },
     ],
-    imageMain: { src: '/images/outdoor_5.jpg', rotation: 0 },
-    imageSecondary: { src: '/images/outdoor_6.jpg', rotation: 0 },
+    images: [
+      { src: '/images/outdoor_5.jpg', rotation: 0 },
+      { src: '/images/outdoor_6.jpg', rotation: 0 },
+    ],
     badgeNumber: '30+', badgeText: 'yil\ntajriba',
+  },
+  video: {
+    sectionLabel: 'Virtual tur',
+    title: 'Xojikent muhitini his eting',
+    subtitle: 'Qisqa filmimizni tomosha qiling va o\'zingizni bu yerda tasavvur qiling',
   },
   services: {
     sectionLabel: 'Xizmatlarimiz',

@@ -9,23 +9,27 @@
         </svg>
         <span>Admin Panel</span>
       </div>
-      <h2>Вход в панель управления</h2>
-      <p>Hojikent Oromgohi</p>
+      <div class="login-lang-toggle">
+        <button :class="{ active: adminLang === 'ru' }" @click="setAdminLang('ru')">🇷🇺</button>
+        <button :class="{ active: adminLang === 'uz' }" @click="setAdminLang('uz')">🇺🇿</button>
+      </div>
+      <h2>{{ ui.loginTitle }}</h2>
+      <p>{{ ui.loginSub }}</p>
       <form @submit.prevent="doLogin">
         <div class="login-field">
-          <label>Пароль</label>
+          <label>{{ ui.loginPassword }}</label>
           <input
             :type="showPwd ? 'text' : 'password'"
             v-model="pwdInput"
-            placeholder="Введите пароль"
+            :placeholder="ui.loginPlaceholder"
             autofocus
           />
           <button type="button" class="pwd-toggle" @click="showPwd = !showPwd">
             {{ showPwd ? '🙈' : '👁' }}
           </button>
         </div>
-        <div v-if="loginError" class="login-error">Неверный пароль</div>
-        <button type="submit" class="login-btn">Войти</button>
+        <div v-if="loginError" class="login-error">{{ ui.loginError }}</div>
+        <button type="submit" class="login-btn">{{ ui.loginBtn }}</button>
       </form>
     </div>
   </div>
@@ -60,17 +64,21 @@
       </nav>
 
       <div class="sidebar__footer">
+        <div class="sidebar__lang">
+          <button :class="{ active: adminLang === 'ru' }" @click="setAdminLang('ru')">🇷🇺</button>
+          <button :class="{ active: adminLang === 'uz' }" @click="setAdminLang('uz')">🇺🇿</button>
+        </div>
         <a href="/#/" target="_blank" class="sidebar__action sidebar__action--view">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-          Открыть сайт
+          {{ ui.openSite }}
         </a>
         <button class="sidebar__action sidebar__action--reset" @click="confirmReset">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.61"/></svg>
-          Сбросить данные
+          {{ ui.resetData }}
         </button>
         <button class="sidebar__action sidebar__action--logout" @click="logout">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-          Выйти
+          {{ ui.logout }}
         </button>
       </div>
     </aside>
@@ -81,7 +89,7 @@
         <h1>{{ currentSectionLabel }}</h1>
         <div class="topbar-right">
           <Transition name="toast">
-            <div v-if="saved" class="save-toast">✓ Сохранено</div>
+            <div v-if="saved" class="save-toast">{{ ui.saved }}</div>
           </Transition>
         </div>
       </header>
@@ -91,27 +99,38 @@
         <!-- ===== HERO ===== -->
         <template v-if="activeSection === 'hero'">
           <div class="editor-card">
-            <div class="card-head">Текст и кнопки</div>
+            <div class="card-head">{{ ui.heroNav }}</div>
             <div class="card-body fields-grid">
-              <field-wrap label="Бейдж"><input v-model="d.hero.badge" @input="flash" /></field-wrap>
-              <field-wrap label="Заголовок (часть 1)"><input v-model="d.hero.title" @input="flash" /></field-wrap>
-              <field-wrap label="Заголовок курсив"><input v-model="d.hero.titleItalic" @input="flash" /></field-wrap>
-              <field-wrap label="Подзаголовок (\\n = новая строка)"><textarea v-model="d.hero.subtitle" rows="2" @input="flash"></textarea></field-wrap>
-              <field-wrap label="Кнопка «Забронировать»"><input v-model="d.hero.btnBook" @input="flash" /></field-wrap>
-              <field-wrap label="Кнопка «Узнать больше»"><input v-model="d.hero.btnLearn" @input="flash" /></field-wrap>
-              <field-wrap label="Текст прокрутки"><input v-model="d.hero.scrollText" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.navAbout"><input v-model="d.nav.about" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.navServices"><input v-model="d.nav.services" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.navGallery"><input v-model="d.nav.gallery" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.navContact"><input v-model="d.nav.contact" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.navBook"><input v-model="d.nav.book" @input="flash" /></field-wrap>
+            </div>
+          </div>
+
+          <div class="editor-card">
+            <div class="card-head">{{ ui.heroText }}</div>
+            <div class="card-body fields-grid">
+              <field-wrap :label="ui.heroBadge"><input v-model="d.hero.badge" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.heroTitle1"><input v-model="d.hero.title" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.heroTitleItalic"><input v-model="d.hero.titleItalic" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.heroSubtitle"><textarea v-model="d.hero.subtitle" rows="2" @input="flash"></textarea></field-wrap>
+              <field-wrap :label="ui.heroBtnBook"><input v-model="d.hero.btnBook" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.heroBtnLearn"><input v-model="d.hero.btnLearn" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.heroScrollText"><input v-model="d.hero.scrollText" @input="flash" /></field-wrap>
             </div>
           </div>
 
           <div class="editor-card">
             <div class="card-head">
-              Статистика
-              <button class="btn-add" @click="d.hero.stats.push({ value: '', label: '' }); flash()">+ Добавить</button>
+              {{ ui.heroStats }}
+              <button class="btn-add" @click="d.hero.stats.push({ value: '', label: '' }); flash()">{{ ui.add }}</button>
             </div>
             <div class="card-body">
               <div v-for="(stat, i) in d.hero.stats" :key="i" class="row-item">
-                <input v-model="stat.value" placeholder="Значение (напр. 400+)" @input="flash" />
-                <input v-model="stat.label" placeholder="Подпись" @input="flash" />
+                <input v-model="stat.value" :placeholder="ui.statValuePh" @input="flash" />
+                <input v-model="stat.label" :placeholder="ui.statLabelPh" @input="flash" />
                 <button class="btn-del" @click="d.hero.stats.splice(i, 1); flash()">✕</button>
               </div>
             </div>
@@ -119,29 +138,38 @@
 
           <div class="editor-card">
             <div class="card-head">
-              Слайдер фотографий
-              <button class="btn-add" @click="d.hero.images.push({ src: '/images/', rotation: 0 }); flash()">+ Добавить</button>
+              {{ ui.heroSlider }}
+              <div style="display:flex;gap:6px">
+                <button class="btn-upload" @click="triggerUpload(s => { d.hero.images.push({ src: s, rotation: 0 }); flash() })">{{ ui.uploadPhoto }}</button>
+                <button class="btn-add" @click="d.hero.images.push({ src: '/images/', rotation: 0 }); flash()">{{ ui.add }}</button>
+              </div>
             </div>
             <div class="card-body img-list">
-              <div v-for="(img, i) in d.hero.images" :key="i" class="img-row">
-                <div class="img-thumb" @click="openPicker(img)">
-                  <img :src="img.src" :style="imgRotationStyle(img.rotation)" />
-                  <div class="img-thumb-overlay">Выбрать</div>
-                </div>
-                <div class="img-row-fields">
-                  <input v-model="img.src" placeholder="/images/..." @input="flash" />
-                  <div class="rotation-ctrl">
-                    <button @click="rotateImage(img, 'left'); flash()">⟲ −90°</button>
-                    <span class="rotation-val">{{ img.rotation }}°</span>
-                    <button @click="rotateImage(img, 'right'); flash()">⟳ +90°</button>
+              <draggable v-model="d.hero.images" item-key="src" :animation="150" handle=".drag-handle" @change="flash">
+                <template #item="{ element: img, index: i }">
+                  <div class="img-row">
+                    <div class="drag-handle" title="Перетащить">⠿</div>
+                    <div class="img-thumb" @click="openPicker(img)">
+                      <img :src="img.src" :style="imgRotationStyle(img.rotation)" />
+                      <div class="img-thumb-overlay">🖼 Выбрать</div>
+                    </div>
+                    <div class="img-row-fields">
+                      <div class="upload-row">
+                        <input v-model="img.src" placeholder="/images/..." @input="flash" />
+                        <button class="btn-upload-inline" @click="triggerUpload(s => { img.src = s })">{{ ui.uploadFile }}</button>
+                      </div>
+                      <div class="rotation-ctrl">
+                        <button @click="rotateImage(img, 'left'); flash()">{{ ui.rotateLeft }}</button>
+                        <span class="rotation-val">{{ img.rotation }}°</span>
+                        <button @click="rotateImage(img, 'right'); flash()">{{ ui.rotateRight }}</button>
+                      </div>
+                    </div>
+                    <div class="img-row-actions">
+                      <button class="btn-del" @click="d.hero.images.splice(i, 1); flash()">✕</button>
+                    </div>
                   </div>
-                </div>
-                <div class="img-row-actions">
-                  <button class="btn-icon" @click="moveItem(d.hero.images, i, -1)" :disabled="i === 0">↑</button>
-                  <button class="btn-icon" @click="moveItem(d.hero.images, i, 1)" :disabled="i === d.hero.images.length - 1">↓</button>
-                  <button class="btn-del" @click="d.hero.images.splice(i, 1); flash()">✕</button>
-                </div>
-              </div>
+                </template>
+              </draggable>
             </div>
           </div>
         </template>
@@ -149,32 +177,33 @@
         <!-- ===== ABOUT ===== -->
         <template v-else-if="activeSection === 'about'">
           <div class="editor-card">
-            <div class="card-head">Заголовки</div>
+            <div class="card-head">{{ ui.aboutTitles }}</div>
             <div class="card-body fields-grid">
-              <field-wrap label="Метка раздела"><input v-model="d.about.sectionLabel" @input="flash" /></field-wrap>
-              <field-wrap label="Заголовок (\\n = строка)"><textarea v-model="d.about.title" rows="2" @input="flash"></textarea></field-wrap>
-              <field-wrap label="Значок (число)"><input v-model="d.about.badgeNumber" @input="flash" /></field-wrap>
-              <field-wrap label="Значок (текст, \\n = строка)"><input v-model="d.about.badgeText" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.aboutSectionLabel"><input v-model="d.about.sectionLabel" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.aboutTitle"><textarea v-model="d.about.title" rows="2" @input="flash"></textarea></field-wrap>
+              <field-wrap :label="ui.aboutBadgeNum"><input v-model="d.about.badgeNumber" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.aboutBadgeText"><input v-model="d.about.badgeText" @input="flash" /></field-wrap>
             </div>
           </div>
 
           <div class="editor-card">
             <div class="card-head">
-              Параграфы
-              <button class="btn-add" @click="d.about.paragraphs.push(''); flash()">+ Добавить</button>
+              {{ ui.aboutParagraphs }}
+              <button class="btn-add" @click="d.about.paragraphs.push(''); flash()">{{ ui.add }}</button>
             </div>
-            <div class="card-body">
-              <div v-for="(p, i) in d.about.paragraphs" :key="i" class="row-item">
-                <textarea v-model="d.about.paragraphs[i]" rows="3" @input="flash"></textarea>
-                <button class="btn-del" @click="d.about.paragraphs.splice(i, 1); flash()">✕</button>
+            <div class="card-body para-list">
+              <div v-for="(_, i) in d.about.paragraphs" :key="i" class="para-item">
+                <span class="para-num">{{ i + 1 }}</span>
+                <textarea v-model="d.about.paragraphs[i]" rows="3" @input="flash" class="para-textarea" :placeholder="`${ui.paraPlaceholder} ${i + 1}...`"></textarea>
+                <button class="para-del" @click="d.about.paragraphs.splice(i, 1); flash()" title="Удалить">✕</button>
               </div>
             </div>
           </div>
 
           <div class="editor-card">
             <div class="card-head">
-              Особенности (4 карточки)
-              <button class="btn-add" @click="d.about.features.push({ title: '', desc: '', iconKey: 'star' }); flash()">+ Добавить</button>
+              {{ ui.aboutFeatures }}
+              <button class="btn-add" @click="d.about.features.push({ title: '', desc: '', iconKey: 'star' }); flash()">{{ ui.add }}</button>
             </div>
             <div class="card-body">
               <div v-for="(f, i) in d.about.features" :key="i" class="feature-row">
@@ -184,46 +213,54 @@
                     <option v-for="k in Object.keys(iconPresets)" :key="k" :value="k">{{ k }}</option>
                   </select>
                 </div>
-                <input v-model="f.title" placeholder="Название" @input="flash" />
-                <input v-model="f.desc" placeholder="Описание" @input="flash" />
+                <input v-model="f.title" :placeholder="ui.featureName" @input="flash" />
+                <input v-model="f.desc" :placeholder="ui.featureDesc" @input="flash" />
                 <button class="btn-del" @click="d.about.features.splice(i, 1); flash()">✕</button>
               </div>
             </div>
           </div>
 
           <div class="editor-card">
-            <div class="card-head">Фотографии</div>
+            <div class="card-head">{{ ui.aboutPhotos }}</div>
             <div class="card-body img-list">
-              <div class="img-row">
-                <div class="img-thumb" @click="openPicker(d.about.imageMain)">
-                  <img :src="d.about.imageMain.src" :style="imgRotationStyle(d.about.imageMain.rotation)" />
-                  <div class="img-thumb-overlay">Выбрать</div>
-                </div>
-                <div class="img-row-fields">
-                  <label class="field-label">Главное фото</label>
-                  <input v-model="d.about.imageMain.src" @input="flash" />
-                  <div class="rotation-ctrl">
-                    <button @click="rotateImage(d.about.imageMain, 'left'); flash()">⟲ −90°</button>
-                    <span class="rotation-val">{{ d.about.imageMain.rotation }}°</span>
-                    <button @click="rotateImage(d.about.imageMain, 'right'); flash()">⟳ +90°</button>
+              <draggable v-model="d.about.images" item-key="src" :animation="150" handle=".drag-handle" @change="flash">
+                <template #item="{ element: img, index: i }">
+                  <div class="img-row">
+                    <div class="drag-handle" :title="ui.dragHandle">⠿</div>
+                    <div class="img-thumb" @click="openPicker(img)">
+                      <img :src="img.src" :style="imgRotationStyle(img.rotation)" />
+                      <div class="img-thumb-overlay">🖼 Выбрать</div>
+                    </div>
+                    <div class="img-row-fields">
+                      <label class="field-label">{{ i === 0 ? ui.photoMain : ui.photoSecondary }}</label>
+                      <div class="upload-row">
+                        <input v-model="img.src" @input="flash" />
+                        <button class="btn-upload-inline" @click="triggerUpload(s => { img.src = s })">{{ ui.uploadFile }}</button>
+                      </div>
+                      <div class="rotation-ctrl">
+                        <button @click="rotateImage(img, 'left'); flash()">{{ ui.rotateLeft }}</button>
+                        <span class="rotation-val">{{ img.rotation }}°</span>
+                        <button @click="rotateImage(img, 'right'); flash()">{{ ui.rotateRight }}</button>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
-              <div class="img-row">
-                <div class="img-thumb" @click="openPicker(d.about.imageSecondary)">
-                  <img :src="d.about.imageSecondary.src" :style="imgRotationStyle(d.about.imageSecondary.rotation)" />
-                  <div class="img-thumb-overlay">Выбрать</div>
-                </div>
-                <div class="img-row-fields">
-                  <label class="field-label">Второе фото</label>
-                  <input v-model="d.about.imageSecondary.src" @input="flash" />
-                  <div class="rotation-ctrl">
-                    <button @click="rotateImage(d.about.imageSecondary, 'left'); flash()">⟲ −90°</button>
-                    <span class="rotation-val">{{ d.about.imageSecondary.rotation }}°</span>
-                    <button @click="rotateImage(d.about.imageSecondary, 'right'); flash()">⟳ +90°</button>
-                  </div>
-                </div>
-              </div>
+                </template>
+              </draggable>
+            </div>
+          </div>
+        </template>
+
+        <!-- ===== VIDEO ===== -->
+        <template v-else-if="activeSection === 'video'">
+          <div class="editor-card">
+            <div class="card-head">{{ ui.sections.video }}</div>
+            <div class="card-body fields-grid">
+              <field-wrap :label="ui.videoSectionLabel"><input v-model="d.video.sectionLabel" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.videoTitle"><input v-model="d.video.title" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.videoSubtitle"><input v-model="d.video.subtitle" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.videoUrl" style="grid-column: 1 / -1">
+                <input v-model="d.video.youtubeUrl" :placeholder="ui.videoUrlPlaceholder" @input="flash" />
+              </field-wrap>
             </div>
           </div>
         </template>
@@ -231,185 +268,217 @@
         <!-- ===== SERVICES ===== -->
         <template v-else-if="activeSection === 'services'">
           <div class="editor-card">
-            <div class="card-head">Заголовки раздела</div>
+            <div class="card-head">{{ ui.sectionTitles }}</div>
             <div class="card-body fields-grid">
-              <field-wrap label="Метка"><input v-model="d.services.sectionLabel" @input="flash" /></field-wrap>
-              <field-wrap label="Заголовок"><input v-model="d.services.title" @input="flash" /></field-wrap>
-              <field-wrap label="Подзаголовок"><input v-model="d.services.subtitle" @input="flash" /></field-wrap>
-              <field-wrap label="Сноска"><input v-model="d.services.note" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.sectionLabel"><input v-model="d.services.sectionLabel" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.sectionTitle"><input v-model="d.services.title" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.sectionSubtitle"><input v-model="d.services.subtitle" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.servicesNote"><input v-model="d.services.note" @input="flash" /></field-wrap>
             </div>
           </div>
 
-          <div class="editor-card" v-for="(svc, i) in d.services.items" :key="i">
-            <div class="card-head">
-              Услуга {{ i + 1 }}: {{ svc.title || '(без названия)' }}
-              <button class="btn-del-sm" @click="d.services.items.splice(i, 1); flash()">Удалить</button>
-            </div>
-            <div class="card-body">
-              <div class="service-editor">
-                <div class="img-thumb lg" @click="openPicker(svc)">
-                  <img :src="svc.img" :style="imgRotationStyle(svc.rotation)" />
-                  <div class="img-thumb-overlay">Выбрать фото</div>
-                </div>
-                <div class="service-fields">
-                  <div class="fields-grid">
-                    <field-wrap label="Название"><input v-model="svc.title" @input="flash" /></field-wrap>
-                    <field-wrap label="CTA кнопка"><input v-model="svc.cta" @input="flash" /></field-wrap>
-                    <field-wrap label="Цена"><input v-model="svc.price" @input="flash" /></field-wrap>
-                    <field-wrap label="Единица (напр. сум / ночь)"><input v-model="svc.unit" @input="flash" /></field-wrap>
-                    <field-wrap label="Иконка">
-                      <div class="icon-select-row">
-                        <div class="icon-preview" v-html="iconPresets[svc.iconKey] || ''"></div>
-                        <select v-model="svc.iconKey" @change="flash">
-                          <option v-for="k in Object.keys(iconPresets)" :key="k" :value="k">{{ k }}</option>
-                        </select>
-                      </div>
-                    </field-wrap>
+          <draggable v-model="d.services.items" item-key="title" :animation="150" handle=".drag-handle" @change="flash">
+            <template #item="{ element: svc, index: i }">
+              <div class="editor-card">
+                <div class="card-head">
+                  <div class="drag-handle" :title="ui.dragHandle">⠿</div>
+                  {{ ui.serviceCard }} {{ i + 1 }}: {{ svc.title || ui.serviceNoName }}
+                  <div class="card-head-actions">
+                    <button class="btn-del-sm" @click="d.services.items.splice(i, 1); flash()">{{ ui.delete }}</button>
                   </div>
-                  <field-wrap label="Описание">
-                    <textarea v-model="svc.desc" rows="3" @input="flash"></textarea>
-                  </field-wrap>
-                  <field-wrap label="Путь к фото">
-                    <input v-model="svc.img" @input="flash" />
-                  </field-wrap>
-                  <div class="rotation-ctrl">
-                    <button @click="rotateImage(svc, 'left'); flash()">⟲ −90°</button>
-                    <span class="rotation-val">{{ svc.rotation }}°</span>
-                    <button @click="rotateImage(svc, 'right'); flash()">⟳ +90°</button>
+                </div>
+                <div class="card-body">
+                  <div class="service-editor">
+                    <div class="img-thumb lg" @click="openPicker(svc, 'img')">
+                      <img :src="svc.img" :style="imgRotationStyle(svc.rotation)" />
+                      <div class="img-thumb-overlay">🖼 Выбрать</div>
+                    </div>
+                    <div class="service-fields">
+                      <div class="fields-grid">
+                        <field-wrap :label="ui.serviceTitle"><input v-model="svc.title" @input="flash" /></field-wrap>
+                        <field-wrap :label="ui.serviceCta"><input v-model="svc.cta" @input="flash" /></field-wrap>
+                        <field-wrap :label="ui.servicePrice"><input v-model="svc.price" @input="flash" /></field-wrap>
+                        <field-wrap :label="ui.serviceUnit"><input v-model="svc.unit" @input="flash" /></field-wrap>
+                        <field-wrap :label="ui.serviceIcon">
+                          <div class="icon-select-row">
+                            <div class="icon-preview" v-html="iconPresets[svc.iconKey] || ''"></div>
+                            <select v-model="svc.iconKey" @change="flash">
+                              <option v-for="k in Object.keys(iconPresets)" :key="k" :value="k">{{ k }}</option>
+                            </select>
+                          </div>
+                        </field-wrap>
+                      </div>
+                      <field-wrap :label="ui.serviceDesc">
+                        <textarea v-model="svc.desc" rows="3" @input="flash"></textarea>
+                      </field-wrap>
+                      <div class="upload-row">
+                        <input v-model="svc.img" placeholder="/images/..." @input="flash" style="flex:1;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;outline:none" />
+                        <button class="btn-upload-inline" @click="triggerUpload(s => { svc.img = s })">{{ ui.uploadFile }}</button>
+                      </div>
+                      <div class="rotation-ctrl">
+                        <button @click="rotateImage(svc, 'left'); flash()">{{ ui.rotateLeft }}</button>
+                        <span class="rotation-val">{{ svc.rotation }}°</span>
+                        <button @click="rotateImage(svc, 'right'); flash()">{{ ui.rotateRight }}</button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </template>
+          </draggable>
           <button class="btn-add-card" @click="d.services.items.push({ title: '', desc: '', img: '/images/', rotation: 0, price: '', unit: '', cta: 'Подробнее', iconKey: 'star' }); flash()">
-            + Добавить услугу
+            {{ ui.addService }}
           </button>
         </template>
 
         <!-- ===== ROOMS ===== -->
         <template v-else-if="activeSection === 'rooms'">
           <div class="editor-card">
-            <div class="card-head">Заголовки раздела</div>
+            <div class="card-head">{{ ui.sectionTitles }}</div>
             <div class="card-body fields-grid">
-              <field-wrap label="Метка"><input v-model="d.rooms.sectionLabel" @input="flash" /></field-wrap>
-              <field-wrap label="Заголовок"><input v-model="d.rooms.title" @input="flash" /></field-wrap>
-              <field-wrap label="Подзаголовок"><input v-model="d.rooms.subtitle" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.sectionLabel"><input v-model="d.rooms.sectionLabel" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.sectionTitle"><input v-model="d.rooms.title" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.sectionSubtitle"><input v-model="d.rooms.subtitle" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.roomsPricePrefix"><input v-model="d.rooms.pricePrefix" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.roomsPriceUnit"><input v-model="d.rooms.priceUnit" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.roomsViewText"><input v-model="d.rooms.viewText" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.roomsBookBtn"><input v-model="d.rooms.bookBtn" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.roomsBookBtnModal"><input v-model="d.rooms.bookBtnModal" @input="flash" /></field-wrap>
             </div>
           </div>
 
           <div class="editor-card">
             <div class="card-head">
-              Фильтр-табы
-              <button class="btn-add" @click="d.rooms.tabs.push({ id: 'new', label: '' }); flash()">+ Добавить</button>
+              {{ ui.roomsTabs }}
+              <button class="btn-add" @click="d.rooms.tabs.push({ id: 'new', label: '' }); flash()">{{ ui.add }}</button>
             </div>
             <div class="card-body">
               <div v-for="(tab, i) in d.rooms.tabs" :key="i" class="row-item">
-                <input v-model="tab.id" placeholder="ID (напр. standard)" @input="flash" style="max-width:140px" />
-                <input v-model="tab.label" placeholder="Название" @input="flash" />
+                <input v-model="tab.id" :placeholder="ui.tabIdPh" @input="flash" style="max-width:140px" />
+                <input v-model="tab.label" :placeholder="ui.tabNamePh" @input="flash" />
                 <button class="btn-del" @click="d.rooms.tabs.splice(i, 1); flash()">✕</button>
               </div>
             </div>
           </div>
 
-          <div class="editor-card" v-for="(room, i) in d.rooms.items" :key="i">
-            <div class="card-head">
-              {{ room.name || `Номер ${i + 1}` }}
-              <div class="card-head-actions">
-                <button class="btn-icon" @click="moveItem(d.rooms.items, i, -1)" :disabled="i === 0">↑</button>
-                <button class="btn-icon" @click="moveItem(d.rooms.items, i, 1)" :disabled="i === d.rooms.items.length - 1">↓</button>
-                <button class="btn-del-sm" @click="d.rooms.items.splice(i, 1); flash()">Удалить</button>
-              </div>
-            </div>
-            <div class="card-body">
-              <div class="service-editor">
-                <div class="img-thumb lg" @click="openPicker(room)">
-                  <img :src="room.img" :style="imgRotationStyle(room.rotation)" />
-                  <div class="img-thumb-overlay">Выбрать фото</div>
+          <draggable v-model="d.rooms.items" item-key="name" :animation="150" handle=".drag-handle" @change="flash">
+            <template #item="{ element: room, index: i }">
+              <div class="editor-card">
+                <div class="card-head">
+                  <div class="drag-handle" :title="ui.dragHandle">⠿</div>
+                  {{ room.name || `${ui.roomCard} ${i + 1}` }}
+                  <div class="card-head-actions">
+                    <button class="btn-del-sm" @click="d.rooms.items.splice(i, 1); flash()">{{ ui.delete }}</button>
+                  </div>
                 </div>
-                <div class="service-fields">
-                  <div class="fields-grid">
-                    <field-wrap label="Название номера"><input v-model="room.name" @input="flash" /></field-wrap>
-                    <field-wrap label="Тип">
-                      <select v-model="room.type" @change="flash">
-                        <option v-for="tab in d.rooms.tabs.filter(t => t.id !== 'all')" :key="tab.id" :value="tab.id">{{ tab.label }}</option>
-                      </select>
-                    </field-wrap>
-                    <field-wrap label="Цена (сум/ночь)"><input v-model="room.price" @input="flash" /></field-wrap>
-                    <field-wrap label="Путь к фото"><input v-model="room.img" @input="flash" /></field-wrap>
-                  </div>
-                  <field-wrap label="Описание">
-                    <textarea v-model="room.desc" rows="3" @input="flash"></textarea>
-                  </field-wrap>
-                  <div class="rotation-ctrl" style="margin-bottom:12px">
-                    <button @click="rotateImage(room, 'left'); flash()">⟲ −90°</button>
-                    <span class="rotation-val">{{ room.rotation }}°</span>
-                    <button @click="rotateImage(room, 'right'); flash()">⟳ +90°</button>
-                  </div>
-                  <div class="details-editor">
-                    <label class="field-label">Удобства (теги)</label>
-                    <div class="tags-row">
-                      <span v-for="(det, di) in room.details" :key="di" class="tag">
-                        {{ det }}
-                        <button @click="room.details.splice(di, 1); flash()">×</button>
-                      </span>
-                      <input
-                        class="tag-input"
-                        placeholder="+ Добавить"
-                        @keydown.enter.prevent="e => { if(e.target.value.trim()) { room.details.push(e.target.value.trim()); e.target.value = ''; flash() } }"
-                      />
+                <div class="card-body">
+                  <div class="service-editor">
+                    <div class="img-thumb lg" @click="openPicker(room, 'img')">
+                      <img :src="room.img" :style="imgRotationStyle(room.rotation)" />
+                      <div class="img-thumb-overlay">🖼 Выбрать</div>
+                    </div>
+                    <div class="service-fields">
+                      <div class="fields-grid">
+                        <field-wrap :label="ui.roomName"><input v-model="room.name" @input="flash" /></field-wrap>
+                        <field-wrap :label="ui.roomType">
+                          <select v-model="room.type" @change="flash">
+                            <option v-for="tab in d.rooms.tabs.filter(t => t.id !== 'all')" :key="tab.id" :value="tab.id">{{ tab.label }}</option>
+                          </select>
+                        </field-wrap>
+                        <field-wrap :label="ui.roomPrice"><input v-model="room.price" @input="flash" /></field-wrap>
+                        <div class="field-wrap-plain">
+                          <label class="plain-label">{{ ui.roomPhoto }}</label>
+                          <div class="upload-row">
+                            <input v-model="room.img" placeholder="/images/..." @input="flash" style="flex:1;padding:10px 12px;border:1.5px solid #e2e8f0;border-radius:8px;font-size:13px;outline:none" />
+                            <button class="btn-upload-inline" @click="triggerUpload(s => { room.img = s })">{{ ui.uploadFile }}</button>
+                          </div>
+                        </div>
+                      </div>
+                      <field-wrap :label="ui.roomDesc">
+                        <textarea v-model="room.desc" rows="3" @input="flash"></textarea>
+                      </field-wrap>
+                      <div class="rotation-ctrl" style="margin-bottom:12px">
+                        <button @click="rotateImage(room, 'left'); flash()">{{ ui.rotateLeft }}</button>
+                        <span class="rotation-val">{{ room.rotation }}°</span>
+                        <button @click="rotateImage(room, 'right'); flash()">{{ ui.rotateRight }}</button>
+                      </div>
+                      <div class="details-editor">
+                        <label class="field-label">{{ ui.roomDetails }}</label>
+                        <div class="tags-row">
+                          <span v-for="(det, di) in room.details" :key="di" class="tag">
+                            {{ det }}
+                            <button @click="room.details.splice(di, 1); flash()">×</button>
+                          </span>
+                          <input
+                            class="tag-input"
+                            :placeholder="ui.addTagPh"
+                            @keydown.enter.prevent="e => { if(e.target.value.trim()) { room.details.push(e.target.value.trim()); e.target.value = ''; flash() } }"
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
+            </template>
+          </draggable>
           <button class="btn-add-card" @click="d.rooms.items.push({ img: '/images/', rotation: 0, name: '', type: d.rooms.tabs[1]?.id || 'standard', price: '', desc: '', details: [] }); flash()">
-            + Добавить номер
+            {{ ui.addRoom }}
           </button>
         </template>
 
         <!-- ===== GALLERY ===== -->
         <template v-else-if="activeSection === 'gallery'">
           <div class="editor-card">
-            <div class="card-head">Заголовки раздела</div>
+            <div class="card-head">{{ ui.sectionTitles }}</div>
             <div class="card-body fields-grid">
-              <field-wrap label="Метка"><input v-model="d.gallery.sectionLabel" @input="flash" /></field-wrap>
-              <field-wrap label="Заголовок"><input v-model="d.gallery.title" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.sectionLabel"><input v-model="d.gallery.sectionLabel" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.sectionTitle"><input v-model="d.gallery.title" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.galleryShowAllBtn"><input v-model="d.gallery.showAllBtn" @input="flash" /></field-wrap>
             </div>
           </div>
 
           <div class="editor-card">
             <div class="card-head">
-              Фотографии галереи ({{ d.gallery.images.length }} шт.)
-              <button class="btn-add" @click="d.gallery.images.push({ src: '/images/', alt: '', size: '', rotation: 0 }); flash()">+ Добавить</button>
+              {{ ui.galleryPhotos }} ({{ d.gallery.images.length }})
+              <div style="display:flex;gap:6px">
+                <button class="btn-upload" @click="triggerUpload(s => { d.gallery.images.push({ src: s, alt: '', size: '', rotation: 0 }); flash() })">{{ ui.uploadBtn }}</button>
+                <button class="btn-add" @click="d.gallery.images.push({ src: '/images/', alt: '', size: '', rotation: 0 }); flash()">{{ ui.add }}</button>
+              </div>
             </div>
             <div class="card-body img-list">
-              <div v-for="(img, i) in d.gallery.images" :key="i" class="img-row">
-                <div class="img-thumb" @click="openPicker(img)">
-                  <img :src="img.src" :style="imgRotationStyle(img.rotation)" />
-                  <div class="img-thumb-overlay">Выбрать</div>
-                </div>
-                <div class="img-row-fields">
-                  <input v-model="img.src" placeholder="/images/..." @input="flash" />
-                  <input v-model="img.alt" placeholder="Alt текст" @input="flash" />
-                  <div class="gallery-size-row">
-                    <label class="field-label">Размер:</label>
-                    <label><input type="radio" v-model="img.size" value="" @change="flash" /> Обычный</label>
-                    <label><input type="radio" v-model="img.size" value="wide" @change="flash" /> Широкий (2 колонки)</label>
-                    <label><input type="radio" v-model="img.size" value="tall" @change="flash" /> Высокий (2 строки)</label>
+              <draggable v-model="d.gallery.images" item-key="src" :animation="150" handle=".drag-handle" @change="flash">
+                <template #item="{ element: img, index: i }">
+                  <div class="img-row">
+                    <div class="drag-handle" :title="ui.dragHandle">⠿</div>
+                    <div class="img-thumb" @click="openPicker(img)">
+                      <img :src="img.src" :style="imgRotationStyle(img.rotation)" />
+                      <div class="img-thumb-overlay">🖼 Выбрать</div>
+                    </div>
+                    <div class="img-row-fields">
+                      <div class="upload-row">
+                        <input v-model="img.src" placeholder="/images/..." @input="flash" />
+                        <button class="btn-upload-inline" @click="triggerUpload(s => { img.src = s })">{{ ui.uploadFile }}</button>
+                      </div>
+                      <input v-model="img.alt" :placeholder="ui.galleryAltPh" @input="flash" />
+                      <div class="gallery-size-row">
+                        <label class="field-label">{{ ui.gallerySize }}</label>
+                        <label><input type="radio" v-model="img.size" value="" @change="flash" /> {{ ui.gallerySizeNormal }}</label>
+                        <label><input type="radio" v-model="img.size" value="wide" @change="flash" /> {{ ui.gallerySizeWide }}</label>
+                        <label><input type="radio" v-model="img.size" value="tall" @change="flash" /> {{ ui.gallerySizeTall }}</label>
+                      </div>
+                      <div class="rotation-ctrl">
+                        <button @click="rotateImage(img, 'left'); flash()">{{ ui.rotateLeft }}</button>
+                        <span class="rotation-val">{{ img.rotation }}°</span>
+                        <button @click="rotateImage(img, 'right'); flash()">{{ ui.rotateRight }}</button>
+                      </div>
+                    </div>
+                    <div class="img-row-actions">
+                      <button class="btn-del" @click="d.gallery.images.splice(i, 1); flash()">✕</button>
+                    </div>
                   </div>
-                  <div class="rotation-ctrl">
-                    <button @click="rotateImage(img, 'left'); flash()">⟲ −90°</button>
-                    <span class="rotation-val">{{ img.rotation }}°</span>
-                    <button @click="rotateImage(img, 'right'); flash()">⟳ +90°</button>
-                  </div>
-                </div>
-                <div class="img-row-actions">
-                  <button class="btn-icon" @click="moveItem(d.gallery.images, i, -1)" :disabled="i === 0">↑</button>
-                  <button class="btn-icon" @click="moveItem(d.gallery.images, i, 1)" :disabled="i === d.gallery.images.length - 1">↓</button>
-                  <button class="btn-del" @click="d.gallery.images.splice(i, 1); flash()">✕</button>
-                </div>
-              </div>
+                </template>
+              </draggable>
             </div>
           </div>
         </template>
@@ -417,30 +486,57 @@
         <!-- ===== CONTACT ===== -->
         <template v-else-if="activeSection === 'contact'">
           <div class="editor-card">
-            <div class="card-head">Заголовки и тексты</div>
+            <div class="card-head">{{ ui.contactTitles }}</div>
             <div class="card-body fields-grid">
-              <field-wrap label="Метка"><input v-model="d.contact.sectionLabel" @input="flash" /></field-wrap>
-              <field-wrap label="Заголовок"><input v-model="d.contact.title" @input="flash" /></field-wrap>
-              <field-wrap label="Заголовок формы"><input v-model="d.contact.formTitle" @input="flash" /></field-wrap>
-              <field-wrap label="Подпись формы"><input v-model="d.contact.formSubtitle" @input="flash" /></field-wrap>
-              <field-wrap label="Сообщение об успехе"><input v-model="d.contact.successMessage" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.sectionLabel"><input v-model="d.contact.sectionLabel" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.sectionTitle"><input v-model="d.contact.title" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.contactFormTitle"><input v-model="d.contact.formTitle" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.contactFormSubtitle"><input v-model="d.contact.formSubtitle" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.contactSuccessMsg"><input v-model="d.contact.successMessage" @input="flash" /></field-wrap>
             </div>
           </div>
 
           <div class="editor-card">
-            <div class="card-head">Контактная информация</div>
+            <div class="card-head">{{ ui.contactInfo }}</div>
             <div class="card-body fields-grid">
-              <field-wrap label="Адрес"><textarea v-model="d.contact.address" rows="2" @input="flash"></textarea></field-wrap>
-              <field-wrap label="Телефон"><input v-model="d.contact.phone" @input="flash" /></field-wrap>
-              <field-wrap label="Email"><input v-model="d.contact.email" @input="flash" /></field-wrap>
-              <field-wrap label="Режим работы"><input v-model="d.contact.hours" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.contactAddress"><textarea v-model="d.contact.address" rows="2" @input="flash"></textarea></field-wrap>
+              <field-wrap :label="ui.contactPhone"><input v-model="d.contact.phone" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.contactEmail"><input v-model="d.contact.email" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.contactHours"><input v-model="d.contact.hours" @input="flash" /></field-wrap>
             </div>
           </div>
 
           <div class="editor-card">
-            <div class="card-head">Карта Google Maps</div>
+            <div class="card-head">{{ ui.contactFormFields }}</div>
+            <div class="card-body fields-grid">
+              <field-wrap :label="ui.fNameLabel"><input v-model="d.contact.nameLabel" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fNamePh"><input v-model="d.contact.namePlaceholder" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fPhoneLabel"><input v-model="d.contact.phoneLabel" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fPhonePh"><input v-model="d.contact.phonePlaceholder" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fCheckin"><input v-model="d.contact.checkinLabel" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fCheckout"><input v-model="d.contact.checkoutLabel" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fGuestsLabel"><input v-model="d.contact.guestsLabel" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fGuestsPh"><input v-model="d.contact.guestsPlaceholder" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fRoomTypeLabel"><input v-model="d.contact.roomTypeLabel" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fRoomTypeAny"><input v-model="d.contact.roomTypeAny" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fMsgLabel"><input v-model="d.contact.messageLabel" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fMsgPh"><input v-model="d.contact.messagePlaceholder" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fSubmitBtn"><input v-model="d.contact.submitBtn" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fSubmittingBtn"><input v-model="d.contact.submittingBtn" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fRoomStandard"><input v-model="d.contact.roomStandard" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fRoomDouble"><input v-model="d.contact.roomDouble" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fRoomSuite"><input v-model="d.contact.roomSuite" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fLabelAddress"><input v-model="d.contact.labelAddress" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fLabelPhone"><input v-model="d.contact.labelPhone" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fLabelEmail"><input v-model="d.contact.labelEmail" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.fLabelHours"><input v-model="d.contact.labelHours" @input="flash" /></field-wrap>
+            </div>
+          </div>
+
+          <div class="editor-card">
+            <div class="card-head">{{ ui.contactMap }}</div>
             <div class="card-body">
-              <field-wrap label="URL embed (из Google Maps → Поделиться → Встроить карту → src=&quot;...&quot;)">
+              <field-wrap :label="ui.contactMapLabel">
                 <textarea v-model="d.contact.mapEmbed" rows="3" @input="flash"></textarea>
               </field-wrap>
               <div class="map-preview">
@@ -448,37 +544,52 @@
               </div>
             </div>
           </div>
+
+          <div class="editor-card">
+            <div class="card-head">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="color:#229ED9"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+              Telegram — уведомления о бронях
+            </div>
+            <div class="card-body fields-grid">
+              <field-wrap label="Bot Token">
+                <input v-model="d.contact.telegramToken" @input="flash" placeholder="123456789:AAH..." style="font-family:monospace;font-size:12px" />
+              </field-wrap>
+              <field-wrap label="Chat ID">
+                <input v-model="d.contact.telegramChatId" @input="flash" placeholder="-100..." style="font-family:monospace;font-size:12px" />
+              </field-wrap>
+            </div>
+          </div>
         </template>
 
         <!-- ===== FOOTER ===== -->
         <template v-else-if="activeSection === 'footer'">
           <div class="editor-card">
-            <div class="card-head">Логотип и бренд</div>
+            <div class="card-head">{{ ui.footerBrand }}</div>
             <div class="card-body fields-grid">
-              <field-wrap label="Логотип (основной)"><input v-model="d.footer.logoMain" @input="flash" /></field-wrap>
-              <field-wrap label="Логотип (подпись)"><input v-model="d.footer.logoSub" @input="flash" /></field-wrap>
-              <field-wrap label="Описание бренда"><textarea v-model="d.footer.brandDesc" rows="3" @input="flash"></textarea></field-wrap>
+              <field-wrap :label="ui.footerLogoMain"><input v-model="d.footer.logoMain" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.footerLogoSub"><input v-model="d.footer.logoSub" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.footerBrandDesc"><textarea v-model="d.footer.brandDesc" rows="3" @input="flash"></textarea></field-wrap>
             </div>
           </div>
 
           <div class="editor-card">
-            <div class="card-head">Социальные сети</div>
+            <div class="card-head">{{ ui.footerSocial }}</div>
             <div class="card-body fields-grid">
-              <field-wrap label="Telegram (ссылка)"><input v-model="d.footer.socialTelegram" @input="flash" /></field-wrap>
-              <field-wrap label="Instagram (ссылка)"><input v-model="d.footer.socialInstagram" @input="flash" /></field-wrap>
-              <field-wrap label="Телефон (tel:+998...)"><input v-model="d.footer.socialPhone" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.footerTelegram"><input v-model="d.footer.socialTelegram" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.footerInstagram"><input v-model="d.footer.socialInstagram" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.footerPhone"><input v-model="d.footer.socialPhone" @input="flash" /></field-wrap>
             </div>
           </div>
 
           <div class="editor-card" v-for="(col, ci) in d.footer.navCols" :key="ci">
             <div class="card-head">
-              Навигационная колонка: {{ col.title }}
-              <button class="btn-add" @click="col.links.push({ label: '', href: '#' }); flash()">+ Ссылка</button>
+              {{ ui.footerNavCol }} {{ col.title }}
+              <button class="btn-add" @click="col.links.push({ label: '', href: '#' }); flash()">{{ ui.footerAddLink }}</button>
             </div>
             <div class="card-body">
-              <field-wrap label="Название колонки" style="margin-bottom:12px"><input v-model="col.title" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.footerNavColName" style="margin-bottom:12px"><input v-model="col.title" @input="flash" /></field-wrap>
               <div v-for="(link, li) in col.links" :key="li" class="row-item">
-                <input v-model="link.label" placeholder="Текст" @input="flash" />
+                <input v-model="link.label" :placeholder="ui.footerLinkText" @input="flash" />
                 <input v-model="link.href" placeholder="#section" @input="flash" />
                 <button class="btn-del" @click="col.links.splice(li, 1); flash()">✕</button>
               </div>
@@ -486,21 +597,22 @@
           </div>
 
           <div class="editor-card">
-            <div class="card-head">Контакты в футере</div>
+            <div class="card-head">{{ ui.footerContacts }}</div>
             <div class="card-body fields-grid">
-              <field-wrap label="Адрес"><input v-model="d.footer.footerAddress" @input="flash" /></field-wrap>
-              <field-wrap label="Телефон"><input v-model="d.footer.footerPhone" @input="flash" /></field-wrap>
-              <field-wrap label="Email"><input v-model="d.footer.footerEmail" @input="flash" /></field-wrap>
-              <field-wrap label="Часы работы"><input v-model="d.footer.footerHours" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.footerContactTitle"><input v-model="d.footer.footerContactTitle" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.footerAddress"><input v-model="d.footer.footerAddress" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.contactPhone"><input v-model="d.footer.footerPhone" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.footerEmail"><input v-model="d.footer.footerEmail" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.footerHours"><input v-model="d.footer.footerHours" @input="flash" /></field-wrap>
             </div>
           </div>
 
           <div class="editor-card">
-            <div class="card-head">Нижняя строка</div>
+            <div class="card-head">{{ ui.footerBottom }}</div>
             <div class="card-body fields-grid">
-              <field-wrap label="Копирайт"><input v-model="d.footer.copyright" @input="flash" /></field-wrap>
-              <field-wrap label="Политика конфиденциальности"><input v-model="d.footer.privacyLabel" @input="flash" /></field-wrap>
-              <field-wrap label="Условия использования"><input v-model="d.footer.termsLabel" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.footerCopyright"><input v-model="d.footer.copyright" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.footerPrivacy"><input v-model="d.footer.privacyLabel" @input="flash" /></field-wrap>
+              <field-wrap :label="ui.footerTerms"><input v-model="d.footer.termsLabel" @input="flash" /></field-wrap>
             </div>
           </div>
         </template>
@@ -514,8 +626,11 @@
     <div v-if="picker.open" class="picker-backdrop" @click.self="picker.open = false">
       <div class="picker-modal">
         <div class="picker-header">
-          <h3>Выберите фотографию</h3>
-          <button @click="picker.open = false">✕</button>
+          <h3>{{ ui.pickerTitle }}</h3>
+          <div style="display:flex;gap:10px;align-items:center">
+            <button class="btn-picker-upload" @click="triggerUpload(s => selectImage(s))">{{ ui.uploadNew }}</button>
+            <button @click="picker.open = false">✕</button>
+          </div>
         </div>
         <div class="picker-grid">
           <div
@@ -537,11 +652,11 @@
   <Transition name="modal-fade">
     <div v-if="showResetConfirm" class="picker-backdrop" @click.self="showResetConfirm = false">
       <div class="confirm-modal">
-        <h3>Сбросить все данные?</h3>
-        <p>Все изменения будут удалены и данные вернутся к исходным значениям.</p>
+        <h3>{{ ui.resetTitle }}</h3>
+        <p>{{ ui.resetDesc }}</p>
         <div class="confirm-btns">
-          <button class="btn-cancel" @click="showResetConfirm = false">Отмена</button>
-          <button class="btn-confirm-reset" @click="doReset">Сбросить</button>
+          <button class="btn-cancel" @click="showResetConfirm = false">{{ ui.resetCancel }}</button>
+          <button class="btn-confirm-reset" @click="doReset">{{ ui.resetConfirm }}</button>
         </div>
       </div>
     </div>
@@ -551,6 +666,13 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { siteData, iconPresets, availableImages, rotateImage, imgRotationStyle, resetToDefaults } from '../store/siteData.js'
+import FieldWrap from '../components/FieldWrap.vue'
+import draggable from 'vuedraggable'
+import adminUiDict from '../i18n/adminUi.js'
+
+const adminLang = ref(localStorage.getItem('hojikent_admin_lang') || 'ru')
+function setAdminLang(l) { adminLang.value = l; localStorage.setItem('hojikent_admin_lang', l) }
+const ui = computed(() => adminUiDict[adminLang.value])
 
 const ADMIN_PASSWORD = 'admin44'
 const auth = ref(!!sessionStorage.getItem('hojikent_admin'))
@@ -591,48 +713,57 @@ function doReset() {
   flash()
 }
 
-function moveItem(arr, i, dir) {
-  const j = i + dir
-  if (j < 0 || j >= arr.length) return
-  const tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp
-  flash()
-}
-
 // Image picker
-const picker = reactive({ open: false, target: null })
-function openPicker(target) {
+const picker = reactive({ open: false, target: null, prop: 'src' })
+function openPicker(target, prop = 'src') {
   picker.target = target
+  picker.prop = prop
   picker.open = true
 }
 function selectImage(src) {
-  if (picker.target) picker.target.src = src
+  if (picker.target) picker.target[picker.prop] = src
   picker.open = false
   flash()
 }
 
-const sections = [
-  { id: 'hero',     label: 'Главная (Hero)',   icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>` },
-  { id: 'about',    label: 'О пансионате',     icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>` },
-  { id: 'services', label: 'Услуги',           icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>` },
-  { id: 'rooms',    label: 'Номера',           icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>` },
-  { id: 'gallery',  label: 'Галерея',          icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>` },
-  { id: 'contact',  label: 'Контакты',        icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>` },
-  { id: 'footer',   label: 'Футер',            icon: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>` },
-]
-
-const currentSectionLabel = computed(() => sections.find(s => s.id === activeSection.value)?.label || '')
-</script>
-
-<!-- FieldWrap inline component -->
-<script>
-export default {
-  components: {
-    FieldWrap: {
-      props: ['label'],
-      template: `<div class="field-wrap"><label class="field-label">{{ label }}</label><slot /></div>`
+// File upload
+function triggerUpload(callback) {
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = 'image/*'
+  input.style.cssText = 'position:fixed;top:-200px;left:-200px;opacity:0;pointer-events:none'
+  document.body.appendChild(input)
+  const cleanup = () => { try { document.body.removeChild(input) } catch {} }
+  input.addEventListener('change', (e) => {
+    cleanup()
+    const file = e.target.files[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = ev => {
+      callback(ev.target.result)
+      flash()
     }
-  }
+    reader.readAsDataURL(file)
+  })
+  input.addEventListener('cancel', cleanup)
+  input.click()
 }
+
+const sectionIcons = {
+  hero:     `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/></svg>`,
+  about:    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`,
+  video:    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>`,
+  services: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`,
+  rooms:    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>`,
+  gallery:  `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
+  contact:  `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>`,
+  footer:   `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`,
+}
+const sections = computed(() => Object.keys(sectionIcons).map(id => ({
+  id, icon: sectionIcons[id], label: ui.value.sections[id],
+})))
+
+const currentSectionLabel = computed(() => sections.value.find(s => s.id === activeSection.value)?.label || '')
 </script>
 
 <style>
@@ -726,6 +857,37 @@ export default {
   display: flex; flex-direction: column; gap: 4px;
   border-top: 1px solid rgba(255,255,255,0.07);
 }
+.sidebar__lang {
+  display: flex; gap: 6px; padding: 4px 0 8px;
+}
+.sidebar__lang button {
+  flex: 1; padding: 5px 4px; font-size: 16px; border-radius: 8px;
+  background: rgba(255,255,255,0.1);
+  border: 1.5px solid rgba(255,255,255,0.15);
+  cursor: pointer; transition: all 0.2s;
+  color: rgba(255,255,255,0.5);
+  display: flex; align-items: center; justify-content: center;
+}
+.sidebar__lang button.active {
+  background: #52b788;
+  border-color: #52b788;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(82,183,136,0.4);
+}
+.sidebar__lang button:hover:not(.active) {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.3);
+  color: rgba(255,255,255,0.85);
+}
+.login-lang-toggle {
+  display: flex; gap: 6px; justify-content: flex-end; margin-bottom: 16px;
+}
+.login-lang-toggle button {
+  padding: 4px 10px; font-size: 16px; border-radius: 8px;
+  background: #f1f5f9; border: 1.5px solid #e2e8f0; cursor: pointer;
+  transition: background 0.15s;
+}
+.login-lang-toggle button.active { background: #2d6a4f; border-color: #2d6a4f; }
 .sidebar__action {
   display: flex; align-items: center; gap: 8px;
   padding: 9px 12px; border-radius: 8px;
@@ -783,18 +945,34 @@ export default {
   display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
 }
 
-.field-wrap { display: flex; flex-direction: column; gap: 6px; }
-.field-label { font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.06em; text-transform: uppercase; }
-.field-wrap input, .field-wrap select, .field-wrap textarea {
-  width: 100%; padding: 10px 12px;
-  border: 1.5px solid #e2e8f0; border-radius: 8px;
-  font-size: 13px; color: #1e293b; outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
+/* Paragraphs */
+.para-list { display: flex; flex-direction: column; gap: 10px; }
+.para-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: #f8fafc; border: 1.5px solid #e2e8f0;
+  border-radius: 10px; padding: 12px 14px;
+  transition: border-color 0.2s;
 }
-.field-wrap input:focus, .field-wrap select:focus, .field-wrap textarea:focus {
-  border-color: #2d6a4f; box-shadow: 0 0 0 3px rgba(45,106,79,0.1);
+.para-item:focus-within { border-color: #2d6a4f; }
+.para-num {
+  flex-shrink: 0; width: 24px; height: 24px; margin-top: 2px;
+  background: #2d6a4f; color: #fff;
+  border-radius: 50%; font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
 }
-.field-wrap textarea { resize: vertical; min-height: 72px; }
+.para-textarea {
+  flex: 1; border: none; background: transparent; outline: none;
+  font-size: 13px; color: #1e293b; resize: vertical;
+  min-height: 64px; font-family: inherit; line-height: 1.6;
+}
+.para-del {
+  flex-shrink: 0; width: 26px; height: 26px; margin-top: 1px;
+  background: #fee2e2; color: #dc2626; border: none;
+  border-radius: 6px; font-size: 13px; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.para-del:hover { background: #fecaca; }
 
 /* Row items */
 .row-item {
@@ -814,6 +992,20 @@ export default {
   cursor: pointer; transition: all 0.15s;
 }
 .btn-add:hover { background: #2d6a4f; color: #fff; border-color: #2d6a4f; }
+.btn-upload {
+  background: #eff6ff; color: #3b82f6;
+  border: 1.5px solid #bfdbfe; border-radius: 6px;
+  padding: 5px 12px; font-size: 12px; font-weight: 700;
+  cursor: pointer; transition: all 0.15s;
+}
+.btn-upload:hover { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+.btn-picker-upload {
+  background: #eff6ff; color: #3b82f6;
+  border: 1.5px solid #bfdbfe; border-radius: 6px;
+  padding: 6px 14px; font-size: 13px; font-weight: 600;
+  cursor: pointer; transition: all 0.15s;
+}
+.btn-picker-upload:hover { background: #3b82f6; color: #fff; border-color: #3b82f6; }
 .btn-add-card {
   background: #f8fafc; border: 2px dashed #cbd5e1; border-radius: 12px;
   padding: 14px; font-size: 13px; font-weight: 700; color: #64748b;
@@ -874,10 +1066,31 @@ export default {
 .img-row-fields { flex: 1; display: flex; flex-direction: column; gap: 8px; }
 .img-row-fields input {
   padding: 8px 10px; border: 1.5px solid #e2e8f0; border-radius: 7px;
-  font-size: 12px; outline: none;
+  font-size: 12px; outline: none; flex: 1;
 }
 .img-row-fields input:focus { border-color: #2d6a4f; }
 .img-row-actions { display: flex; flex-direction: column; gap: 4px; }
+.drag-handle {
+  cursor: grab; font-size: 20px; color: #94a3b8;
+  padding: 0 6px; user-select: none; line-height: 1;
+  flex-shrink: 0;
+}
+.drag-handle:active { cursor: grabbing; color: #2d6a4f; }
+
+.upload-row { display: flex; gap: 6px; align-items: center; }
+.upload-row input { flex: 1; padding: 8px 10px; border: 1.5px solid #e2e8f0; border-radius: 7px; font-size: 12px; outline: none; }
+.upload-row input:focus { border-color: #2d6a4f; }
+.btn-upload-inline {
+  flex-shrink: 0;
+  background: #3b82f6; color: #fff;
+  border: none; border-radius: 7px;
+  padding: 8px 12px; font-size: 12px; font-weight: 700;
+  cursor: pointer; white-space: nowrap;
+  transition: background 0.15s;
+}
+.btn-upload-inline:hover { background: #2563eb; }
+.field-wrap-plain { display: flex; flex-direction: column; gap: 6px; }
+.plain-label { font-size: 11px; font-weight: 700; color: #64748b; letter-spacing: 0.06em; text-transform: uppercase; }
 
 .rotation-ctrl {
   display: flex; align-items: center; gap: 8px;

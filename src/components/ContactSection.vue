@@ -46,29 +46,45 @@
             <div class="form__row">
               <div class="form__group">
                 <label>{{ t.contact.checkinLabel }}</label>
-                <input type="date" v-model="form.checkin" :min="today" />
+                <VueDatePicker
+                  v-model="form.checkin"
+                  :min-date="today"
+                  :enable-time-picker="false"
+                  auto-apply
+                  format="dd.MM.yyyy"
+                  :placeholder="'дд.мм.гггг'"
+                  class="dp-custom"
+                />
               </div>
               <div class="form__group">
                 <label>{{ t.contact.checkoutLabel }}</label>
-                <input type="date" v-model="form.checkout" :min="form.checkin ? minCheckout : today" />
+                <VueDatePicker
+                  v-model="form.checkout"
+                  :min-date="minCheckout"
+                  :enable-time-picker="false"
+                  auto-apply
+                  format="dd.MM.yyyy"
+                  :placeholder="'дд.мм.гггг'"
+                  class="dp-custom"
+                />
               </div>
             </div>
             <div class="form__row">
               <div class="form__group">
                 <label>{{ t.contact.guestsLabel }}</label>
-                <select v-model="form.guests">
-                  <option value="">{{ t.contact.guestsPlaceholder }}</option>
-                  <option v-for="n in 10" :key="n" :value="n">{{ n }} {{ guestLabel(n) }}</option>
-                </select>
+                <CustomSelect
+                  v-model="form.guests"
+                  :options="guestOptions"
+                  :placeholder="t.contact.guestsPlaceholder"
+                />
               </div>
               <div class="form__group">
                 <label>{{ t.contact.roomTypeLabel }}</label>
-                <select v-model="form.roomType">
-                  <option value="">{{ t.contact.roomTypeAny }}</option>
-                  <option value="standard">{{ t.contact.roomStandard }}</option>
-                  <option value="double">{{ t.contact.roomDouble }}</option>
-                  <option value="suite">{{ t.contact.roomSuite }}</option>
-                </select>
+                <CustomSelect
+                  v-model="form.roomType"
+                  :options="roomOptions"
+                  :placeholder="t.contact.roomTypeAny"
+                />
               </div>
             </div>
             <div class="form__group">
@@ -95,6 +111,10 @@
 <script setup>
 import { ref, reactive, computed, watch } from 'vue'
 import { useContent } from '../composables/useContent.js'
+import { siteData } from '../store/siteData.js'
+import { VueDatePicker } from '@vuepic/vue-datepicker'
+import '@vuepic/vue-datepicker/dist/main.css'
+import CustomSelect from './CustomSelect.vue'
 
 const { t } = useContent()
 
@@ -102,17 +122,23 @@ const submitting = ref(false)
 const submitted  = ref(false)
 const today = new Date().toISOString().split('T')[0]
 
-const form = reactive({ name: '', phone: '', checkin: '', checkout: '', guests: '', roomType: '', message: '' })
+const form = reactive({ name: '', phone: '', checkin: null, checkout: null, guests: '', roomType: '', message: '' })
+
+function fmtDate(d) {
+  if (!d) return ''
+  const dt = new Date(d)
+  return dt.toLocaleDateString('ru-RU', { day: '2-digit', month: '2-digit', year: 'numeric' })
+}
 
 const minCheckout = computed(() => {
-  if (!form.checkin) return today
+  if (!form.checkin) return new Date(today)
   const d = new Date(form.checkin)
   d.setDate(d.getDate() + 1)
-  return d.toISOString().split('T')[0]
+  return d
 })
 
-watch(() => form.checkin, () => {
-  if (form.checkout && form.checkout <= form.checkin) form.checkout = ''
+watch(() => form.checkin, (val) => {
+  if (form.checkout && val && new Date(form.checkout) <= new Date(val)) form.checkout = null
 })
 
 function guestLabel(n) {
@@ -123,6 +149,16 @@ function guestLabel(n) {
   if (n < 5) return f
   return m
 }
+
+const guestOptions = computed(() =>
+  Array.from({ length: 10 }, (_, i) => ({ value: i + 1, label: `${i + 1} ${guestLabel(i + 1)}` }))
+)
+
+const roomOptions = computed(() => [
+  { value: 'standard', label: t.value.contact.roomStandard },
+  { value: 'double',   label: t.value.contact.roomDouble },
+  { value: 'suite',    label: t.value.contact.roomSuite },
+])
 
 const contactItems = computed(() => [
   {
@@ -151,10 +187,38 @@ const contactItems = computed(() => [
 
 async function submitForm() {
   submitting.value = true
-  await new Promise(r => setTimeout(r, 1200))
+
+  const roomLabels = {
+    standard: t.value.contact.roomStandard,
+    double:   t.value.contact.roomDouble,
+    suite:    t.value.contact.roomSuite,
+  }
+
+  const lines = [
+    `🏨 <b>Новое бронирование — Hojikent Oromgohi</b>`,
+    ``,
+    `👤 <b>Имя:</b> ${form.name}`,
+    `📞 <b>Телефон:</b> ${form.phone}`,
+    form.checkin  ? `📅 <b>Заезд:</b> ${fmtDate(form.checkin)}`   : null,
+    form.checkout ? `📅 <b>Выезд:</b> ${fmtDate(form.checkout)}`  : null,
+    form.guests   ? `👥 <b>Гостей:</b> ${form.guests}`   : null,
+    form.roomType ? `🛏 <b>Тип номера:</b> ${roomLabels[form.roomType] || form.roomType}` : null,
+    form.message  ? `💬 <b>Пожелания:</b> ${form.message}` : null,
+  ].filter(l => l !== null).join('\n')
+
+  try {
+    const token  = siteData.contact.telegramToken
+    const chatId = siteData.contact.telegramChatId
+    await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: chatId, text: lines, parse_mode: 'HTML' }),
+    })
+  } catch {}
+
   submitting.value = false
   submitted.value = true
-  Object.assign(form, { name: '', phone: '', checkin: '', checkout: '', guests: '', roomType: '', message: '' })
+  Object.assign(form, { name: '', phone: '', checkin: null, checkout: null, guests: '', roomType: '', message: '' })
   setTimeout(() => { submitted.value = false }, 5000)
 }
 </script>
@@ -194,6 +258,8 @@ async function submitForm() {
   border-color: var(--clr-primary); box-shadow: 0 0 0 3px rgba(45,106,79,0.12);
 }
 .form__group textarea { resize: vertical; min-height: 80px; }
+
+
 .form__submit { width: 100%; justify-content: center; padding: 15px; font-size: 15px; margin-top: 4px; }
 .form__submit:disabled { opacity: 0.7; cursor: not-allowed; }
 

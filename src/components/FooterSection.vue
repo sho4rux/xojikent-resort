@@ -57,10 +57,6 @@
 
       <div class="footer__bottom">
         <span>{{ t.footer.copyright }}</span>
-        <div class="footer__bottom-links">
-          <a href="#">{{ t.footer.privacyLabel }}</a>
-          <a href="#">{{ t.footer.termsLabel }}</a>
-        </div>
       </div>
     </div>
   </footer>

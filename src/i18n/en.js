@@ -29,9 +29,16 @@ export default {
       { title: '3 Meals per Day', desc: 'Fresh daily meals included in the price', iconKey: 'food' },
       { title: 'Active Recreation', desc: 'Pools, sports, excursions & disco evenings', iconKey: 'activity' },
     ],
-    imageMain: { src: '/images/outdoor_5.jpg', rotation: 0 },
-    imageSecondary: { src: '/images/outdoor_6.jpg', rotation: 0 },
+    images: [
+      { src: '/images/outdoor_5.jpg', rotation: 0 },
+      { src: '/images/outdoor_6.jpg', rotation: 0 },
+    ],
     badgeNumber: '30+', badgeText: 'years\nof service',
+  },
+  video: {
+    sectionLabel: 'Virtual Tour',
+    title: 'Feel the Atmosphere of Hojikent',
+    subtitle: 'Watch our short film and imagine yourself here',
   },
   services: {
     sectionLabel: 'Our Services',

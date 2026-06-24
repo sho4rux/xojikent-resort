@@ -25,7 +25,7 @@
           {{ link.label }}
         </a>
         <div class="lang-switcher">
-          <button v-for="l in langs" :key="l" class="lang-btn" :class="{ active: lang === l }" @click="lang = l">{{ l.toUpperCase() }}</button>
+          <button v-for="l in langs" :key="l" class="lang-btn" :class="{ active: lang === l }" @click="lang = l">{{ langFlags[l] }}</button>
         </div>
         <button class="btn btn-primary navbar__cta" @click="scrollTo('contact')">
           {{ t.nav.book }}
@@ -48,7 +48,7 @@
           {{ link.label }}
         </a>
         <div class="lang-switcher lang-switcher--mobile">
-          <button v-for="l in langs" :key="l" class="lang-btn" :class="{ active: lang === l }" @click="lang = l">{{ l.toUpperCase() }}</button>
+          <button v-for="l in langs" :key="l" class="lang-btn" :class="{ active: lang === l }" @click="lang = l">{{ langFlags[l] }}</button>
         </div>
         <button class="btn btn-primary" style="width:100%; justify-content:center;" @click="mobileNav('contact')">
           {{ t.nav.book }}
@@ -68,7 +68,8 @@ const { t } = useContent()
 const isScrolled = ref(false)
 const mobileOpen = ref(false)
 const activeSection = ref('hero')
-const langs = ['ru', 'uz', 'en']
+const langs = ['ru', 'uz']
+const langFlags = { ru: '🇷🇺', uz: '🇺🇿' }
 
 const links = computed(() => [
   { id: 'about',    label: t.value.nav.about },
