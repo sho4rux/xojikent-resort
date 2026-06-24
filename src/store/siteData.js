@@ -1,4 +1,4 @@
-import { reactive, watch } from 'vue'
+import { reactive, watch, toRaw } from 'vue'
 
 const STORAGE_KEY = 'hojikent_site_data_v2'
 
@@ -266,6 +266,47 @@ function loadData() {
 
 export const siteData = reactive(loadData())
 
+const API_URL    = '/api.php'
+const API_SECRET = 'xk9m_hojikent_2026_api'
+let _syncing = false
+let _saveTimer = null
+
+export async function syncFromServer() {
+  try {
+    const res = await fetch(API_URL + '?v=' + Date.now())
+    if (!res.ok) return
+    const serverData = await res.json()
+    if (!serverData || !Object.keys(serverData).length) return
+    _syncing = true
+    const base = deepClone(defaultData)
+    Object.keys(base).forEach(k => {
+      if (!(k in serverData)) serverData[k] = base[k]
+    })
+    // Migrate old about image keys if needed
+    if (serverData.about && !Array.isArray(serverData.about.images)) {
+      serverData.about.images = [
+        serverData.about.imageMain ?? base.about.images[0],
+        serverData.about.imageSecondary ?? base.about.images[1],
+      ]
+      delete serverData.about.imageMain
+      delete serverData.about.imageSecondary
+    }
+    Object.keys(serverData).forEach(k => { siteData[k] = serverData[k] })
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(serverData)) } catch {}
+  } catch {}
+  setTimeout(() => { _syncing = false }, 200)
+}
+
+async function saveToServer(val) {
+  try {
+    await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ...toRaw(val), _secret: API_SECRET }),
+    })
+  } catch {}
+}
+
 export function resetToDefaults() {
   const fresh = deepClone(defaultData)
   Object.keys(fresh).forEach(k => { siteData[k] = fresh[k] })
@@ -273,7 +314,10 @@ export function resetToDefaults() {
 }
 
 watch(siteData, (val) => {
+  if (_syncing) return
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(val)) } catch {}
+  clearTimeout(_saveTimer)
+  _saveTimer = setTimeout(() => saveToServer(val), 1500)
 }, { deep: true })
 
 export function rotateImage(img, direction) {
