@@ -35,7 +35,10 @@
   </div>
 
   <!-- ADMIN SHELL -->
-  <div v-else class="admin-shell">
+  <div v-else class="admin-shell" :class="{ 'sidebar-open': sidebarOpen }">
+
+    <!-- Mobile overlay -->
+    <div class="sidebar-overlay" @click="sidebarOpen = false"></div>
 
     <!-- Sidebar -->
     <aside class="sidebar">
@@ -48,6 +51,7 @@
           <div class="sidebar__logo-main">HOJIKENT</div>
           <div class="sidebar__logo-sub">Admin Panel</div>
         </div>
+        <button class="sidebar__close" @click="sidebarOpen = false">✕</button>
       </div>
 
       <nav class="sidebar__nav">
@@ -56,7 +60,7 @@
           :key="s.id"
           class="sidebar__item"
           :class="{ active: activeSection === s.id }"
-          @click="activeSection = s.id"
+          @click="activeSection = s.id; sidebarOpen = false"
         >
           <span class="sidebar__icon" v-html="s.icon"></span>
           <span>{{ s.label }}</span>
@@ -86,6 +90,9 @@
     <!-- Content -->
     <main class="admin-main">
       <header class="admin-topbar">
+        <button class="hamburger" @click="sidebarOpen = true" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
         <h1>{{ currentSectionLabel }}</h1>
         <div class="topbar-right">
           <Transition name="toast">
@@ -694,6 +701,7 @@ const loginError = ref(false)
 const saved = ref(false)
 const showResetConfirm = ref(false)
 const activeSection = ref('hero')
+const sidebarOpen = ref(false)
 
 const d = siteData
 
@@ -1190,12 +1198,89 @@ const currentSectionLabel = computed(() => sections.value.find(s => s.id === act
 .modal-fade-enter-active, .modal-fade-leave-active { transition: opacity 0.25s; }
 .modal-fade-enter-from, .modal-fade-leave-to { opacity: 0; }
 
+/* ===== HAMBURGER (hidden on desktop) ===== */
+.hamburger {
+  display: none;
+  flex-direction: column; justify-content: center; gap: 5px;
+  width: 36px; height: 36px; padding: 6px;
+  border-radius: 8px; background: #f1f5f9; border: none; cursor: pointer;
+  flex-shrink: 0;
+}
+.hamburger span {
+  display: block; height: 2px; border-radius: 2px; background: #0f172a;
+  transition: transform 0.2s;
+}
+
+/* ===== SIDEBAR CLOSE (hidden on desktop) ===== */
+.sidebar__close {
+  display: none;
+  margin-left: auto; color: rgba(255,255,255,0.5);
+  font-size: 18px; padding: 4px 8px; border-radius: 6px;
+  transition: background 0.15s;
+}
+.sidebar__close:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+/* ===== OVERLAY (hidden on desktop) ===== */
+.sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 199; backdrop-filter: blur(2px);
+}
+
 @media (max-width: 768px) {
-  .sidebar { width: 200px; }
-  .admin-content { padding: 20px; }
-  .fields-grid { grid-template-columns: 1fr; }
-  .picker-grid { grid-template-columns: repeat(3, 1fr); }
+  /* Show hamburger & close */
+  .hamburger { display: flex; }
+  .sidebar__close { display: block; }
+
+  /* Topbar tighter */
+  .admin-topbar { padding: 14px 16px; gap: 12px; }
+  .admin-topbar h1 { font-size: 16px; }
+
+  /* Sidebar becomes a drawer */
+  .sidebar {
+    position: fixed; left: 0; top: 0; bottom: 0; z-index: 200;
+    width: 260px;
+    transform: translateX(-100%);
+    transition: transform 0.28s cubic-bezier(0.4,0,0.2,1);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.3);
+  }
+  .sidebar-open .sidebar { transform: translateX(0); }
+  .sidebar-open .sidebar-overlay { display: block; }
+
+  /* Content fills full width */
+  .admin-main { width: 100%; }
+  .admin-content { padding: 16px; gap: 14px; max-width: 100%; }
+
+  /* Cards */
+  .card-body { padding: 14px; }
+  .card-head { padding: 12px 14px; font-size: 12px; }
+
+  /* Grids → single column */
+  .fields-grid { grid-template-columns: 1fr; gap: 12px; }
+  .picker-grid { grid-template-columns: repeat(2, 1fr); }
+
+  /* Image rows */
+  .img-row { flex-wrap: wrap; gap: 10px; }
+  .img-thumb { width: 80px; height: 80px; flex-shrink: 0; }
+  .img-thumb.lg { width: 100%; height: 180px; }
+  .img-row-fields { min-width: 0; flex: 1 1 calc(100% - 90px); }
+
+  /* Service/room cards */
   .service-editor { flex-direction: column; }
-  .img-thumb.lg { width: 100%; height: 160px; }
+  .room-editor { flex-direction: column; }
+
+  /* Upload row */
+  .upload-row { flex-wrap: wrap; }
+  .upload-row input { min-width: 0; flex: 1 1 100%; }
+  .btn-upload-inline { width: 100%; justify-content: center; }
+
+  /* Rotation controls */
+  .rotation-ctrl { flex-wrap: wrap; gap: 4px; }
+
+  /* Para items */
+  .para-item { padding: 10px; }
+
+  /* Login card */
+  .login-card { padding: 32px 24px; margin: 16px; }
 }
 </style>
