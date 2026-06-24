@@ -674,7 +674,7 @@ const adminLang = ref(localStorage.getItem('hojikent_admin_lang') || 'ru')
 function setAdminLang(l) { adminLang.value = l; localStorage.setItem('hojikent_admin_lang', l) }
 const ui = computed(() => adminUiDict[adminLang.value])
 
-const PWD_HASH = 'd60b03ffd0c5dc528cc4331e2dca677f014772590e474bb634ff74381af46de8'
+const PWD_B64 = 'YWRtaW40NTZ4b2pha2VudA=='
 const SESSION_KEY = 'hojikent_admin_v2'
 const SESSION_TTL = 8 * 60 * 60 * 1000 // 8 hours
 
@@ -697,14 +697,8 @@ const activeSection = ref('hero')
 
 const d = siteData
 
-async function hashStr(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str))
-  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('')
-}
-
-async function doLogin() {
-  const hash = await hashStr(pwdInput.value)
-  if (hash === PWD_HASH) {
+function doLogin() {
+  if (btoa(pwdInput.value) === PWD_B64) {
     sessionStorage.setItem(SESSION_KEY, JSON.stringify({ ts: Date.now() }))
     auth.value = true
     loginError.value = false
